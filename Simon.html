@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="font/flaticon.css" />
+    <meta charset="utf-8" />
+    <title>Simon Dice</title>
+    <style>
+      * {
+        font-family: "Roboto", sans-serif;
+      }
+      body {
+        margin: 0;
+        background-image: url("img/fonfo.jpg");
+        display: grid;
+        align-items: center;
+        height: 100vh;
+        grid-template-rows: 2;
+      }
+
+      h1 {
+        display: flex;
+        justify-content: center;
+        color: black;
+      }
+      .gameboard {
+        height: 100vh;
+        width: 100vh;
+        border-radius: 50%;
+        overflow: hidden;
+        margin: 0 auto;
+        max-height: 60vh;
+        max-width: 60vh;
+      }
+
+      .color {
+        width: 50%;
+        height: 50%;
+        display: inline-block;
+      }
+
+      .left {
+        float: left;
+      }
+
+      .right {
+        float: left;
+      }
+
+      .celeste {
+        background: #22a6b3;
+      }
+
+      .celeste.light {
+        background: #7ed6df;
+      }
+
+      .violeta {
+        background: #6d1473;
+      }
+
+      .violeta.light {
+        background: #e056fd;
+      }
+
+      .naranja {
+        background: #b37227;
+      }
+
+      .naranja.light {
+        background: #ffbe76;
+      }
+
+      .verde {
+        background: #265819;
+      }
+
+      .verde.light {
+        background: #badc58;
+      }
+
+      .btn-start {
+        width: 400px;
+        height: 100px;
+        background: black;
+        color: white;
+        font-size: 2.5rem;
+        position: absolute;
+        border-radius: 10px;
+        top: calc(62% - 170px);
+        left: calc(50% - 200px);
+      }
+
+      .hide {
+        display: none;
+      }
+
+      .footer {
+        display: grid;
+        margin-top: 75px;
+        justify-content: center;
+        color: black;
+      }
+
+      footer .social {
+        width: 300px;
+        height: auto;
+        display: flex;
+        justify-items: flex-end;
+        align-items: center;
+        justify-content: space-around;
+        justify-self: start;
+        margin-right: 50px;
+      }
+
+      footer a {
+        text-decoration: none;
+      }
+
+      footer p {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Simón, dice...</h1>
+    <div class="gameboard">
+      <div id="celeste" class="color celeste left" data-color="celeste"></div>
+      <div id="violeta" class="color violeta right" data-color="violeta"></div>
+      <div id="naranja" class="color naranja left" data-color="naranja"></div>
+      <div id="verde" class="color verde right" data-color="verde"></div>
+      <button id="btnEmpezar" class="btn-start" onclick="empezarJuego()">
+        Empezar a jugar!
+      </button>
+    </div>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script>
+      const celeste = document.getElementById("celeste");
+      const violeta = document.getElementById("violeta");
+      const naranja = document.getElementById("naranja");
+      const verde = document.getElementById("verde");
+      const btnEmpezar = document.getElementById("btnEmpezar");
+      const ULTIMO_NNIVEL = 5;
+
+      class Juego {
+        constructor() {
+          this.inicializar = this.inicializar.bind(this);
+          this.inicializar();
+          this.generarSecuencia();
+          setTimeout(this.siguienteNivel(), 500);
+        }
+
+        inicializar() {
+          this.siguienteNivel = this.siguienteNivel.bind(this);
+          this.elegirColor = this.elegirColor.bind(this);
+          this.toggleBtnEmpezar();
+          this.nivel = 1;
+          this.colores = {
+            celeste,
+            violeta,
+            naranja,
+            verde,
+          };
+        }
+        toggleBtnEmpezar() {
+          if (btnEmpezar.classList.contains("hide")) {
+            btnEmpezar.classList.remove("hide");
+          } else {
+            btnEmpezar.classList.add("hide");
+          }
+        }
+
+        generarSecuencia() {
+          this.secuencia = new Array(ULTIMO_NNIVEL)
+            .fill(0)
+            .map((n) => Math.floor(Math.random() * 4));
+        }
+        //}
+
+        siguienteNivel() {
+          this.subnivel = 0;
+          this.iluminarSecuencia();
+          this.agregarEventosClick();
+        }
+
+        transformarNumeroAColor(numero) {
+          switch (numero) {
+            case 0:
+              return "celeste";
+            case 1:
+              return "violeta";
+            case 2:
+              return "naranja";
+            case 3:
+              return "verde";
+          }
+        }
+
+        transformarColorANumero(color) {
+          switch (color) {
+            case "celeste":
+              return 0;
+            case "violeta":
+              return 1;
+            case "naranja":
+              return 2;
+            case "verde":
+              return 3;
+          }
+        }
+
+        iluminarSecuencia() {
+          for (let i = 0; i < this.nivel; i++) {
+            //con el for recorremos el array que previamenten en la función generar secuencia. se establecio de manera random.
+            const color = this.transformarNumeroAColor(this.secuencia[i]);
+            //Ahora iluminaremos el color.
+            //El setTimeout es para definir el tiempo entre cada ilumincaión del color.
+            setTimeout(() => this.iluminarcolor(color), 1000 * i);
+          }
+        }
+
+        iluminarcolor(color) {
+          this.colores[color].classList.add("light");
+          setTimeout(() => this.apagarColor(color), 350);
+        }
+
+        apagarColor(color) {
+          this.colores[color].classList.remove("light");
+        }
+
+        agregarEventosClick() {
+          this.colores.celeste.addEventListener("click", this.elegirColor);
+          this.colores.verde.addEventListener("click", this.elegirColor);
+          this.colores.violeta.addEventListener("click", this.elegirColor);
+          this.colores.naranja.addEventListener("click", this.elegirColor);
+        }
+
+        eliminarEventosClick() {
+          this.colores.celeste.removeEventListener("click", this.elegirColor);
+          this.colores.verde.removeEventListener("click", this.elegirColor);
+          this.colores.violeta.removeEventListener("click", this.elegirColor);
+          this.colores.naranja.removeEventListener("click", this.elegirColor);
+        }
+
+        elegirColor(ev) {
+          const nombreColor = ev.target.dataset.color;
+          const numeroColor = this.transformarColorANumero(nombreColor);
+          //this.iluminarColor(nombreColor);
+          if (numeroColor === this.secuencia[this.subnivel]) {
+            this.subnivel++;
+            if (this.subnivel === this.nivel) {
+              this.nivel++;
+              this.eliminarEventosClick();
+              if (this.nivel === ULTIMO_NNIVEL + 1) {
+                this.ganoElJuego();
+              } else {
+                //Windows es que el ejecuta set timeout
+                setTimeout(this.siguienteNivel, 1500);
+              }
+            }
+          } else {
+            this.perdioElJuego();
+          }
+        }
+
+        ganoElJuego() {
+          swal(
+            "Simon dice:",
+            "Felicitaciones!\nGanaste el juego",
+            "success"
+          ).then(() => {
+            this.inicializar();
+          });
+        }
+
+        perdioElJuego() {
+          swal(
+            "Simon dice:",
+            "Lo lamentamos!\nPerdiste el juego",
+            "error"
+          ).then(() => {
+            this.eliminarEventosClick();
+            this.inicializar();
+          });
+        }
+      }
+      function empezarJuego() {
+        window.juego = new Juego();
+      }
+    </script>
+    <footer class="footer">
+      <div class="social">
+        <a href="https://www.facebook.com/Christian-G%C3%B3mez-102932581455109">
+          <span class="flaticon-001-facebook"></span>
+        </a>
+        <a href="https://twitter.com/christianogmz">
+          <span class="flaticon-002-twitter"></span>
+        </a>
+        <a href="https://www.instagram.com/christianogz/?hl=es-la">
+          <span class="flaticon-011-instagram"></span>
+        </a>
+        <a href="https://www.linkedin.com/in/christian-g%C3%B3mez-04815a163/">
+          <span class="flaticon-010-linkedin"></span>
+        </a>
+        <a href="https://www.youtube.com/channel/UCrsC8yo657y74Db9x7AtscQ">
+          <span class="flaticon-008-youtube"></span>
+        </a>
+      </div>
+      <p>Design by: Xiagoz</p>
+    </footer>
+  </body>
+</html>
