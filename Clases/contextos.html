@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contextos</title>
+  </head>
+  <body>
+    <script>
+      const chris = {
+        nombre: "Christian",
+        apellido: "Gómez",
+      };
+
+      const yesicca = {
+        nombre: "Yesicca",
+        apellido: "Cortes",
+      };
+
+      function saludar(saludo = "Hola") {
+        console.log(`${saludo}, Mi nombre es ${this.nombre} ${this.apellido}`);
+      }
+
+      //Bind cambia el contexto de una función.
+      //Bind no ejecuta la funión, solo nos retorna una nueva función dentro de una const
+      const saludarAChris = saludar.bind(chris);
+      // Call y apply si ejecutan la función al ser escritos.
+      saludar.call(chris, "Hola Che");
+      saludar.apply(yesicca, ["Hola parcera"]);
+    </script>
+  </body>
+</html>
